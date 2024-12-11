@@ -1,5 +1,5 @@
 require("dotenv").config();
-import express from "express";
+import express, { Request, Response } from "express";
 import { basePrompt as nodeBasePrompt } from "./defaults/node";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 import { BASE_PROMPT, getSystemPrompt } from "./prompts";
@@ -46,6 +46,24 @@ app.post("/template", async (req, res) => {
 
 
 });
+
+app.post("/chat", async (req, res) => {
+  const messages = req.body.messages;
+  const chat = model.startChat({
+    history: messages,
+  });
+
+  let result = await chat.sendMessageStream("Create a todo app.");
+  for await (const chunk of result.stream) {
+    const chunkText = chunk.text();
+    process.stdout.write(chunkText);
+  }
+
+  res.json({})
+  return;
+});
+
+
 
 app.listen(3000);
 
