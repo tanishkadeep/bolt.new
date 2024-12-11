@@ -8,13 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -55,30 +48,20 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     return;
 }));
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, e_1, _b, _c;
     const messages = req.body.messages;
     const chat = model.startChat({
         history: messages,
     });
-    let result = yield chat.sendMessageStream("Create a todo app.");
-    try {
-        for (var _d = true, _e = __asyncValues(result.stream), _f; _f = yield _e.next(), _a = _f.done, !_a; _d = true) {
-            _c = _f.value;
-            _d = false;
-            const chunk = _c;
-            const chunkText = chunk.text();
-            process.stdout.write(chunkText);
-        }
-    }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-    finally {
-        try {
-            if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
-        }
-        finally { if (e_1) throw e_1.error; }
-    }
-    res.json({});
-    return;
+    // let result = await chat.sendMessageStream(getSystemPrompt());
+    // for await (const chunk of result.stream) {
+    //   const chunkText = chunk.text();
+    //   process.stdout.write(chunkText);
+    // }
+    let result = yield chat.sendMessage((0, prompts_1.getSystemPrompt)());
+    console.log(result.response.text());
+    res.json({
+        response: result.response.text()
+    });
 }));
 app.listen(3000);
 // async function main() {

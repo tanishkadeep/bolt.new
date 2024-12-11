@@ -1,5 +1,5 @@
 require("dotenv").config();
-import express, { Request, Response } from "express";
+import express, { } from "express";
 import { basePrompt as nodeBasePrompt } from "./defaults/node";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 import { BASE_PROMPT, getSystemPrompt } from "./prompts";
@@ -53,19 +53,24 @@ app.post("/chat", async (req, res) => {
     history: messages,
   });
 
-  let result = await chat.sendMessageStream("Create a todo app.");
-  for await (const chunk of result.stream) {
-    const chunkText = chunk.text();
-    process.stdout.write(chunkText);
-  }
+  // let result = await chat.sendMessageStream(getSystemPrompt());
+  // for await (const chunk of result.stream) {
+  //   const chunkText = chunk.text();
+  //   process.stdout.write(chunkText);
+  // }
 
-  res.json({})
-  return;
+  let result = await chat.sendMessage(getSystemPrompt());
+  console.log(result.response.text());
+
+  res.json({
+    response: result.response.text()
+  });
 });
 
 
-
 app.listen(3000);
+
+
 
 // async function main() {
 //   const genAI = new GoogleGenerativeAI(API_KEY);
